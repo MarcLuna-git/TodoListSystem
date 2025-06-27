@@ -35,7 +35,6 @@ public class DbUserManager
 
             if (exists > 0)
             {
-                // if Username already taken po
                 return false;
             }
 

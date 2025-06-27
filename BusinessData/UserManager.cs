@@ -29,7 +29,7 @@ public class UserManager //dito naman is for users authenticate for login and sa
         {
             if (user.Username == username)
             {
-                return false; // if Username already exists
+                return false;
             }
         }
 

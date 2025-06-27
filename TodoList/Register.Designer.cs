@@ -2,9 +2,6 @@
 {
     partial class Register
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
         private System.ComponentModel.IContainer components = null;
 
         /// <summary>
@@ -13,7 +10,7 @@
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
+            if (disposing && (components != null))   
             {
                 components.Dispose();
             }
@@ -134,6 +131,7 @@
             Controls.Add(label2);
             Controls.Add(label1);
             Name = "Register";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Register";
             Load += Register_Load;
             ResumeLayout(false);

@@ -8,7 +8,7 @@ namespace ToDoListProcess.DL
 {
     public class JsonFileTask : ITaskData
     {
-        private string filePath = "tasks.json";
+        private readonly string filePath = "Tasks.json";
 
         private List<TaskItem> LoadAllTasks()
         {
@@ -23,9 +23,15 @@ namespace ToDoListProcess.DL
 
         private void SaveAllTasks(List<TaskItem> tasks)
         {
-            string json = JsonSerializer.Serialize(tasks);
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true 
+            };
+
+            string json = JsonSerializer.Serialize(tasks, options);
             File.WriteAllText(filePath, json);
         }
+
 
         public List<TaskItem> GetAllTasks(string user)
         {

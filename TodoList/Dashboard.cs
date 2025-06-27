@@ -1,93 +1,76 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using ToDoListProcess.Business;
+using ToDoListProcess.Common;
 using ToDoListProcess.DL;
 
 namespace TodoList
 {
     public partial class Dashboard : Form
     {
-        private readonly ITaskData taskData = new DbTaskData();
-        private readonly ToDoListManager toDoList;
+        private readonly ToDoListManager toDoManager;
         private readonly string currentUser;
 
         public Dashboard(string username)
         {
             InitializeComponent();
             currentUser = username;
-            toDoList = new ToDoListManager(taskData);
+            toDoManager = new ToDoListManager(new DbTaskData());
             LoadTasks();
         }
+
         private void LoadTasks()
         {
             listBoxTasks.Items.Clear();
-            var tasks = toDoList.GetTasks(currentUser);
+            var tasks = toDoManager.GetAllTasks(currentUser);
             foreach (var task in tasks)
             {
-                listBoxTasks.Items.Add(task.ToString());
+                listBoxTasks.Items.Add(task.Task + "  |  Added: " + task.DateAndTime.ToString("yyyy-MM-dd HH:mm:ss"));
             }
         }
 
-        private void btnSearch_Click(object sender, EventArgs e)
+        private void BtnAddTask_Click(object sender, EventArgs e)
         {
-            string keyword = tbSearchBox.Text.Trim();
-            if (!string.IsNullOrWhiteSpace(keyword))
+            string taskDesc = textbAddTask.Text.Trim();
+            if (!string.IsNullOrWhiteSpace(taskDesc))
             {
-                var results = toDoList.SearchTasks(keyword, currentUser);
-                listBoxTasks.Items.Clear();
-                foreach (var task in results)
+                bool success = toDoManager.AddTask(currentUser, taskDesc);
+                if (success)
                 {
-                    listBoxTasks.Items.Add(task.ToString());
+                    MessageBox.Show("Task added.");
+                    textbAddTask.Clear();
+                    LoadTasks();
                 }
-
-                if (results.Count == 0)
-                    MessageBox.Show("No tasks found.");
+                else
+                {
+                    MessageBox.Show("Failed to add task.");
+                }
             }
             else
             {
-                LoadTasks(); 
+                MessageBox.Show("Task description cannot be empty.");
             }
         }
 
-        private void tbSearchBox_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void btnLogout_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("Logged out successfully..");
-            this.Hide();
-            Form1 loginForm = new Form1();
-            loginForm.Show();
-            this.Close();
-
-        }
-
-        private void listBoxTasks_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void btnEditTask_Click(object sender, EventArgs e)
+        private void BtnEditTask_Click(object sender, EventArgs e)
         {
             if (listBoxTasks.SelectedIndex >= 0)
             {
-                string current = listBoxTasks.SelectedItem.ToString();
-                string newDesc = Microsoft.VisualBasic.Interaction.InputBox("Edit task:", "Edit Task", current);
-
+                string currentTask = listBoxTasks.SelectedItem.ToString();
+                string newDesc = Microsoft.VisualBasic.Interaction.InputBox("Edit task:", "Edit Task", currentTask);
                 if (!string.IsNullOrWhiteSpace(newDesc))
                 {
-                    var result = toDoList.EditTask(listBoxTasks.SelectedIndex, newDesc, currentUser);
-                    MessageBox.Show(result == "success" ? "Task updated." : result);
-                    LoadTasks();
+                    bool success = toDoManager.EditTask(listBoxTasks.SelectedIndex, newDesc, currentUser);
+                    if (success)
+                    {
+                        MessageBox.Show("Task updated.");
+                        LoadTasks();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Failed to update task.");
+                    }
                 }
             }
             else
@@ -96,16 +79,23 @@ namespace TodoList
             }
         }
 
-        private void btnDeleteTask_Click(object sender, EventArgs e)
+        private void BtnDeleteTask_Click(object sender, EventArgs e)
         {
             if (listBoxTasks.SelectedIndex >= 0)
             {
                 var confirm = MessageBox.Show("Are you sure you want to delete this task?", "Confirm Delete", MessageBoxButtons.YesNo);
                 if (confirm == DialogResult.Yes)
                 {
-                    var result = toDoList.DeleteTask(listBoxTasks.SelectedIndex, currentUser);
-                    MessageBox.Show(result == "success" ? "Task deleted." : result);
-                    LoadTasks();
+                    bool success = toDoManager.DeleteTask(listBoxTasks.SelectedIndex, currentUser);
+                    if (success)
+                    {
+                        MessageBox.Show("Task deleted.");
+                        LoadTasks();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Failed to delete task.");
+                    }
                 }
             }
             else
@@ -114,14 +104,20 @@ namespace TodoList
             }
         }
 
-        private void btnMarkAsDone_Click(object sender, EventArgs e)
+        private void BtnMarkAsDone_Click(object sender, EventArgs e)
         {
             if (listBoxTasks.SelectedIndex >= 0)
             {
-                var result = toDoList.MarkAsDone(listBoxTasks.SelectedIndex, currentUser);
-                MessageBox.Show(result == "success" ? "Task marked as done." : result);
-                LoadTasks();
-                LoadDoneTasks(); 
+                bool success = toDoManager.MarkAsDone(listBoxTasks.SelectedIndex, currentUser);
+                if (success)
+                {
+                    MessageBox.Show("Task marked as done.");
+                    LoadTasks();
+                }
+                else
+                {
+                    MessageBox.Show("Failed to mark task as done.");
+                }
             }
             else
             {
@@ -129,52 +125,35 @@ namespace TodoList
             }
         }
 
-        private void btnAddTask_Click(object sender, EventArgs e)
+        private void BtnSearch_Click(object sender, EventArgs e)
         {
-            string taskDesc = textbAddTask.Text.Trim();
-            if (!string.IsNullOrWhiteSpace(taskDesc))
+            string keyword = tbSearchBox.Text.Trim();
+            listBoxTasks.Items.Clear();
+            var results = toDoManager.SearchTasks(keyword, currentUser);
+            if (results.Count == 0)
             {
-                var result = toDoList.AddTask(currentUser, taskDesc);
-                MessageBox.Show(result == "success" ? "Task added." : result);
-                textbAddTask.Clear();
-                LoadTasks();
+                MessageBox.Show("No tasks found.");
             }
             else
             {
-                MessageBox.Show("Task description cannot be empty...");
-            }
-        }
-
-        private void LoadDoneTasks()
-        {
-            listBoxMarkAsDone.Items.Clear();
-
-            var tasks = toDoList.GetTaskItems(currentUser);
-
-            foreach (var task in tasks)
-            {
-                if (task.Task.StartsWith("[√] "))  
+                foreach (var task in results)
                 {
-                    listBoxMarkAsDone.Items.Add(task.ToString());
+                    listBoxTasks.Items.Add(task.Task + "  |  Added: " + task.DateAndTime.ToString("yyyy-MM-dd HH:mm:ss"));
                 }
             }
-
-            if (listBoxMarkAsDone.Items.Count == 0)
-            {
-                listBoxMarkAsDone.Items.Add("No completed tasks yet.");
-            }
         }
 
-
-
-        private void textbAddTask_TextChanged(object sender, EventArgs e)
+        private void BtnLogout_Click(object sender, EventArgs e)
         {
-
+            MessageBox.Show("Logged out successfully.");
+            this.Hide();
+            Form1 loginForm = new Form1();
+            loginForm.Show();
         }
 
-        private void listBoxMarkAsDone_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
+        private void TbSearchBox_TextChanged(object sender, EventArgs e) { }
+        private void ListBoxTasks_SelectedIndexChanged(object sender, EventArgs e) { }
+        private void TextbAddTask_TextChanged(object sender, EventArgs e) { }
+        private void ListBoxMarkAsDone_SelectedIndexChanged(object sender, EventArgs e) { }
     }
 }

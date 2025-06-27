@@ -9,6 +9,7 @@ namespace ToDoListUI
     {
         static string? currentUser = null;
 
+        //Dito mamimili kalang po if anong storage gusto nyong gamitin,pero now ang gamit kopo is Database na
         // static readonly ITaskData taskData = new InMemoryTask();
         // static readonly ITaskData taskData = new JsonFileTask();
         // static readonly ITaskData taskData = new TextFileTask();
@@ -59,7 +60,7 @@ namespace ToDoListUI
                 {
                     Console.WriteLine("Login successful!");
                     currentUser = user;
-                    return true; // GOING TO MAIN MENU 
+                    return true;
                 }
                 else
                 {
@@ -83,7 +84,7 @@ namespace ToDoListUI
                 {
                     Console.WriteLine("Register Successfully!");
                     currentUser = user;
-                    break; //exit loop if successful or hindi na existing
+                    break;
                 }
                 else
                 {
@@ -137,12 +138,9 @@ namespace ToDoListUI
                 }
             }
         }
-        /// <summary>
-        /// dito yung methods ng pinaka main menu 
-        /// </summary>
         static void ViewTasks()
         {
-            var tasks = toDoManager.GetTasks(currentUser);
+            var tasks = toDoManager.GetAllTasks(currentUser);
             if (tasks.Count == 0)
             {
                 Console.WriteLine("No tasks found.");
@@ -151,7 +149,9 @@ namespace ToDoListUI
 
             Console.WriteLine("\n--- Your Tasks ---");
             for (int i = 0; i < tasks.Count; i++)
-                Console.WriteLine($"{i + 1}. {tasks[i]}");
+            {
+                Console.WriteLine($"{i + 1}. {tasks[i].Task}  |  Added: {tasks[i].DateAndTime:yyyy-MM-dd HH:mm:ss}");
+            }
         }
 
         static void AddTask()
@@ -159,8 +159,8 @@ namespace ToDoListUI
             Console.Write("Task description: ");
             string? desc = Console.ReadLine();
 
-            string result = toDoManager.AddTask(currentUser, desc);
-            Console.WriteLine(result == "success" ? "Task added." : result);
+            bool success = toDoManager.AddTask(currentUser, desc);
+            Console.WriteLine(success ? "Task added." : "Please enter a valid task description.");
         }
 
         static void EditTask()
@@ -171,8 +171,8 @@ namespace ToDoListUI
             {
                 Console.Write("New description: ");
                 string? newDesc = Console.ReadLine();
-                string result = toDoManager.EditTask(index - 1, newDesc, currentUser);
-                Console.WriteLine(result == "success" ? "Updated." : result);
+                bool success = toDoManager.EditTask(index - 1, newDesc, currentUser);
+                Console.WriteLine(success ? "Task updated." : "Failed: invalid index or empty description.");
             }
             else Console.WriteLine("Invalid number.");
         }
@@ -183,8 +183,8 @@ namespace ToDoListUI
             Console.Write("Task number to delete: ");
             if (int.TryParse(Console.ReadLine(), out int index))
             {
-                string result = toDoManager.DeleteTask(index - 1, currentUser);
-                Console.WriteLine(result == "success" ? "Deleted." : result);
+                bool success = toDoManager.DeleteTask(index - 1, currentUser);
+                Console.WriteLine(success ? "Task deleted." : "Invalid task number.");
             }
             else Console.WriteLine("Invalid number.");
         }
@@ -195,8 +195,8 @@ namespace ToDoListUI
             Console.Write("Task number to mark as done: ");
             if (int.TryParse(Console.ReadLine(), out int index))
             {
-                string result = toDoManager.MarkAsDone(index - 1, currentUser);
-                Console.WriteLine(result == "success" ? "Marked done." : result);
+                bool success = toDoManager.MarkAsDone(index - 1, currentUser);
+                Console.WriteLine(success ? "Task marked as done." : "Invalid task number.");
             }
             else Console.WriteLine("Invalid number.");
         }
@@ -215,7 +215,9 @@ namespace ToDoListUI
 
             Console.WriteLine("Search Results:");
             for (int i = 0; i < results.Count; i++)
-                Console.WriteLine($"{i + 1}. {results[i]}");
+            {
+                Console.WriteLine($"{i + 1}. {results[i].Task}  |  Added: {results[i].DateAndTime:yyyy-MM-dd HH:mm:ss}");
+            }
         }
     }
 }

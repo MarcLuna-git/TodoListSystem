@@ -2,7 +2,7 @@
 using ToDoListProcess.Common;
 using ToDoListProcess.DL;
 
-namespace ToDoListProcess.Business //dito is taskmanager sya and ang work nya is middle man of ui layer and data logic like validations 
+namespace ToDoListProcess.Business
 {
     public class ToDoListManager
     {
@@ -13,83 +13,50 @@ namespace ToDoListProcess.Business //dito is taskmanager sya and ang work nya is
             this.taskData = taskData;
         }
 
-        public List<string> GetTasks(string username)
-        {
-            var tasks = taskData.GetAllTasks(username);
-            var list = new List<string>();
-
-            foreach (var task in tasks)
-            {
-                list.Add($"{task.Task} ({task.DateAndTime:yyyy-MM-dd HH:mm:ss})");
-            }
-
-            return list;
-        }
-
-        public string AddTask(string username, string description)
+        public bool AddTask(string username, string description)
         {
             if (string.IsNullOrWhiteSpace(description))
-                return "Please enter a valid description.";
+                return false;
 
             taskData.AddTask(username, description);
-            return "Task added.";
+            return true;
         }
 
-        public string EditTask(int index, string newDescription, string username)
+        public bool EditTask(int index, string newDescription, string username)
         {
             var tasks = taskData.GetAllTasks(username);
 
-            if (!IsValidIndex(index, tasks.Count))
-                return "Task number is out of range.";
+            if (!IsValidIndex(index, tasks.Count) || string.IsNullOrWhiteSpace(newDescription))
+                return false;
 
-            if (string.IsNullOrWhiteSpace(newDescription))
-                return "Description cannot be empty.";
-
-            return taskData.EditTask(index, newDescription, username)
-                ? "Task updated."
-                : "Something went wrong while updating.";
+            return taskData.EditTask(index, newDescription, username);
         }
 
-        public string DeleteTask(int index, string username)
+        public bool DeleteTask(int index, string username)
         {
             var tasks = taskData.GetAllTasks(username);
-
-            if (!IsValidIndex(index, tasks.Count))
-                return "Task number is out of range.";
-
-            return taskData.DeleteTask(index, username)
-                ? "Task deleted."
-                : "Failed to delete task.";
+            return IsValidIndex(index, tasks.Count) && taskData.DeleteTask(index, username);
         }
 
-        public string MarkAsDone(int index, string username)
+        public bool MarkAsDone(int index, string username)
         {
             var tasks = taskData.GetAllTasks(username);
-
-            if (!IsValidIndex(index, tasks.Count))
-                return "Task number is out of range.";
-
-            return taskData.MarkAsDone(index, username)
-                ? "Task marked as done."
-                : "Unable to mark task.";
+            return IsValidIndex(index, tasks.Count) && taskData.MarkAsDone(index, username);
         }
 
-        public List<string> SearchTasks(string keyword, string username)
+        public List<TaskItem> GetTasks(string username)
         {
-            var matches = taskData.SearchTasks(keyword, username);
-            var result = new List<string>();
-
-            foreach (var task in matches)
-            {
-                result.Add($"{task.Task} ({task.DateAndTime:yyyy-MM-dd HH:mm:ss})");
-            }
-
-            return result;
+            return GetAllTasks(username);  
         }
 
-        public List<TaskItem> GetTaskItems(string username)
+        public List<TaskItem> GetAllTasks(string username)
         {
             return taskData.GetAllTasks(username);
+        }
+
+        public List<TaskItem> SearchTasks(string keyword, string username)
+        {
+            return taskData.SearchTasks(keyword, username);
         }
 
         private bool IsValidIndex(int index, int count)

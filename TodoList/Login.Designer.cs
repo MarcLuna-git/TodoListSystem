@@ -2,9 +2,7 @@
 {
     partial class Form1
     {
-        /// <summary>
-        ///  Required designer variable.
-        /// </summary>
+        
         private System.ComponentModel.IContainer components = null;
 
         /// <summary>
@@ -36,6 +34,7 @@
             tbPassword = new TextBox();
             btnLogin = new Button();
             btnRegister = new Button();
+            btnExit = new Button();
             SuspendLayout();
             // 
             // label1
@@ -44,11 +43,11 @@
             label1.BackColor = Color.RosyBrown;
             label1.Font = new Font("Stencil", 24F, FontStyle.Bold, GraphicsUnit.Point, 0);
             label1.ForeColor = Color.White;
-            label1.Location = new Point(215, 77);
+            label1.Location = new Point(307, 83);
             label1.Name = "label1";
-            label1.Size = new Size(526, 47);
+            label1.Size = new Size(396, 47);
             label1.TabIndex = 0;
-            label1.Text = "TO DO LIST LOGIN SYSTEM";
+            label1.Text = "TO DO LIST SYSTEM";
             label1.Click += label1_Click;
             // 
             // label2
@@ -119,6 +118,19 @@
             btnRegister.UseVisualStyleBackColor = false;
             btnRegister.Click += btnRegister_Click;
             // 
+            // btnExit
+            // 
+            btnExit.BackColor = Color.LightCoral;
+            btnExit.Font = new Font("Stencil", 10.8F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnExit.ForeColor = Color.White;
+            btnExit.Location = new Point(789, 501);
+            btnExit.Name = "btnExit";
+            btnExit.Size = new Size(151, 40);
+            btnExit.TabIndex = 8;
+            btnExit.Text = "EXIT";
+            btnExit.UseVisualStyleBackColor = false;
+            btnExit.Click += button1_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -126,6 +138,7 @@
             BackColor = Color.RosyBrown;
             BackgroundImage = (Image)resources.GetObject("$this.BackgroundImage");
             ClientSize = new Size(952, 553);
+            Controls.Add(btnExit);
             Controls.Add(btnRegister);
             Controls.Add(btnLogin);
             Controls.Add(tbPassword);
@@ -152,5 +165,6 @@
         private TextBox tbPassword;
         private Button btnLogin;
         private Button btnRegister;
+        private Button btnExit;
     }
 }
