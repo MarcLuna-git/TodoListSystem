@@ -1,9 +1,6 @@
 using System;
 using System.Windows.Forms;
 using ToDoListProcess.DL; 
-using System;
-using System.Windows.Forms;
-using ToDoListProcess.DL; 
 
 namespace TodoList
 {

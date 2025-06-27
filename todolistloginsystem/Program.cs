@@ -22,27 +22,33 @@ namespace ToDoListUI
         {
             Console.WriteLine("=== TO-DO LIST SYSTEM ===\n");
 
-            Console.WriteLine("1. Login");
-            Console.WriteLine("2. Register");
-            Console.Write("Choose option: ");
-            string? input = Console.ReadLine();
+            string? input;
+            while (true)
+            {
+                Console.WriteLine("1. Login");
+                Console.WriteLine("2. Register");
+                Console.Write("Choose option (1 or 2): ");
+                input = Console.ReadLine();
 
-            if (input == "1")
-            {
-                if (Login())
-                    MainMenu();
+                if (input == "1")
+                {
+                    if (Login())
+                        MainMenu();
+                    else
+                        Console.WriteLine("Login failed. Exiting...");
+                    break;
+                }
+                else if (input == "2")
+                {
+                    Register();
+                    if (!string.IsNullOrEmpty(currentUser))
+                        MainMenu();
+                    break;
+                }
                 else
-                    Console.WriteLine("Login failed. Exiting...");
-            }
-            else if (input == "2")
-            {
-                Register();
-                if (!string.IsNullOrEmpty(currentUser))
-                    MainMenu();
-            }
-            else
-            {
-                Console.WriteLine("Invalid input.");
+                {
+                    Console.WriteLine("Invalid input. Please choose 1 or 2.\n");
+                }
             }
         }
 
